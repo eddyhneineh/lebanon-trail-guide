@@ -7,9 +7,14 @@ const store = new TrailStore();
 
 function initHeroStats() {
   const trailCount = document.querySelector("[data-stat='trail-count']");
+  const regionCount = document.querySelector("[data-stat='region-count']");
 
   if (trailCount) {
     trailCount.textContent = store.all().length;
+  }
+
+  if (regionCount) {
+    regionCount.textContent = store.getRegions().length;
   }
 }
 
@@ -45,12 +50,14 @@ function initTrailList() {
 
   list.innerHTML = store.all().map((trail) => `
     <article class="trail-card">
+      <img src="${trail.imageUrl}" alt="${trail.name}" loading="lazy">
       <h2>${trail.name}</h2>
-      <p>${trail.summary}</p>
+      <p>${trail.description}</p>
       <div class="trail-meta">
         <span>${trail.region}</span>
         <span>${trail.difficulty}</span>
         <span>${trail.distanceKm} km</span>
+        <span>${trail.durationHours} hr</span>
       </div>
       <small class="text-muted">${trail.metaLine}</small>
     </article>
@@ -73,7 +80,7 @@ function initWeatherPage() {
       <h2>${weather.location}</h2>
       <p>${weather.summary}</p>
       <div class="trail-meta">
-        <span>${weather.temperatureC}°C</span>
+        <span>${weather.temperatureC}&deg;C</span>
         <span>${weather.windKph} kph wind</span>
       </div>
     `;

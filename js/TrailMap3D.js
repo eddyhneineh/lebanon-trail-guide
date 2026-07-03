@@ -33,10 +33,11 @@ export default class TrailMap3D {
 
   createMarker(trail) {
     const marker = document.createElement("button");
+    const point = trail.mapPoint;
     marker.className = "trail-marker";
     marker.type = "button";
-    marker.style.left = `${trail.coordinates.x}%`;
-    marker.style.top = `${trail.coordinates.y}%`;
+    marker.style.left = `${point.x}%`;
+    marker.style.top = `${point.y}%`;
     marker.setAttribute("aria-label", trail.name);
     marker.title = trail.name;
     marker.addEventListener("click", () => this.showTrail(trail));
@@ -50,7 +51,7 @@ export default class TrailMap3D {
 
     this.detailTarget.innerHTML = `
       <strong>${trail.name}</strong>
-      <p class="mb-1">${trail.summary}</p>
+      <p class="mb-1">${trail.description}</p>
       <small class="text-muted">${trail.metaLine}</small>
     `;
   }

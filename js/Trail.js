@@ -10,6 +10,22 @@ export default class Trail {
   }
 
   get metaLine() {
-    return `${this.distanceKm} km · ${this.elevationGainM} m gain · starts in ${this.start}`;
+    return `${this.distanceKm} km - ${this.elevationGainM} m gain - ${this.durationHours} hr`;
+  }
+
+  get mapPoint() {
+    const bounds = {
+      minLat: 33.0,
+      maxLat: 34.75,
+      minLon: 35.1,
+      maxLon: 36.35
+    };
+    const x = ((this.lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 100;
+    const y = ((bounds.maxLat - this.lat) / (bounds.maxLat - bounds.minLat)) * 100;
+
+    return {
+      x: Math.min(92, Math.max(8, x)),
+      y: Math.min(92, Math.max(8, y))
+    };
   }
 }

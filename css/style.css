@@ -8,6 +8,7 @@
   --rose: #b94c4c;
   --ink: #17201c;
   --muted: #66736c;
+  --footer-height: 76px;
   --shadow: 0 20px 60px rgba(16, 37, 29, 0.18);
 }
 
@@ -17,6 +18,7 @@
 
 body {
   margin: 0;
+  padding-bottom: var(--footer-height);
   color: var(--ink);
   background: var(--stone);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -41,15 +43,23 @@ body {
 .hero-content h1,
 .section-heading h1 {
   max-width: 12ch;
-  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-size: 4rem;
   line-height: 0.92;
   letter-spacing: 0;
   font-weight: 800;
 }
 
-.hero .lead {
+.tagline {
   max-width: 42rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.22rem;
   color: rgba(255, 255, 255, 0.86);
+}
+
+.hero-prompt {
+  margin-bottom: 1.25rem;
+  color: rgba(255, 255, 255, 0.74);
+  font-weight: 700;
 }
 
 .eyebrow {
@@ -86,8 +96,13 @@ body {
 
 .map-page,
 .page-band {
+  padding-top: 74px;
   background:
     linear-gradient(180deg, var(--limestone), var(--stone));
+}
+
+.hero + .map-page {
+  padding-top: 0;
 }
 
 .tool-panel,
@@ -201,6 +216,15 @@ body {
   background: #fff;
 }
 
+.trail-card img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--sky);
+}
+
 .trail-card h2 {
   font-size: 1.25rem;
 }
@@ -226,10 +250,83 @@ body {
   font-size: 1.05rem;
 }
 
+/* Fixed footer technique: the footer is pinned to the viewport with position: fixed,
+   while body padding-bottom reserves matching space so page content is not hidden behind it. */
+.site-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  min-height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  color: #fff;
+  background: var(--cedar-dark);
+  box-shadow: 0 -12px 28px rgba(16, 37, 29, 0.18);
+}
+
+.footer-inner,
+.footer-social {
+  display: flex;
+  align-items: center;
+}
+
+.footer-inner {
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-social {
+  gap: 0.8rem;
+}
+
+.footer-social a,
+.footer-email {
+  color: rgba(255, 255, 255, 0.86);
+  text-decoration: none;
+}
+
+.footer-social a {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  font-size: 1.1rem;
+}
+
+.footer-social a:hover,
+.footer-email:hover {
+  color: #fff;
+}
+
+@media (min-width: 992px) {
+  .hero-content h1,
+  .section-heading h1 {
+    font-size: 6rem;
+  }
+}
+
 @media (max-width: 767px) {
+  :root {
+    --footer-height: 112px;
+  }
+
   .hero {
     min-height: 860px;
     padding-top: 7rem;
+  }
+
+  .hero-content h1,
+  .section-heading h1 {
+    font-size: 3rem;
+  }
+
+  .tagline {
+    font-size: 1.05rem;
   }
 
   .hero-stats {
@@ -239,5 +336,12 @@ body {
   .map-toolbar {
     align-items: start;
     flex-direction: column;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+    text-align: center;
   }
 }
