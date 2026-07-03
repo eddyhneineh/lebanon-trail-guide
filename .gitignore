@@ -1,0 +1,21 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Static build or dependency folders, if added later
+dist/
+build/
+node_modules/
+
+# Local environment overrides
+.env
+.env.*
