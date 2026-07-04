@@ -53,11 +53,18 @@ function initMapPage() {
   const navigationToggle = document.querySelector("#mapNavigationToggle");
   const resetButton = document.querySelector("#mapResetButton");
   const mapFrame = document.querySelector("#map-frame");
-  let activeMapView = "3d";
+  const disclaimer3D = document.querySelector("#map3DDisclaimer");
+  let activeMapView = "2d";
 
   map.render(store.all());
   map2D.render(store.all());
-  map2D.setActive(false);
+  mapContainer.hidden = true;
+  map2D.setActive(true);
+  mapFrame?.classList.add("is-2d");
+  navigationToggle?.classList.add("d-none");
+  if (disclaimer3D) {
+    disclaimer3D.hidden = true;
+  }
 
   function updateSummary(visibleCount) {
     if (summary) {
@@ -75,6 +82,9 @@ function initMapPage() {
     map2D.setActive(is2D);
     mapFrame?.classList.toggle("is-2d", is2D);
     navigationToggle?.classList.toggle("d-none", is2D);
+    if (disclaimer3D) {
+      disclaimer3D.hidden = is2D;
+    }
 
     viewButtons.threeD?.classList.toggle("active", !is2D);
     viewButtons.threeD?.classList.toggle("btn-light", !is2D);

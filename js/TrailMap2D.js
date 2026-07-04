@@ -3,7 +3,6 @@ export default class TrailMap2D {
     this.container = container;
     this.map = null;
     this.markerLayer = null;
-    this.borderLayer = null;
     this.cityLayer = null;
     this.markersByTrailId = new Map();
     this.trails = [];
@@ -28,14 +27,12 @@ export default class TrailMap2D {
       scrollWheelZoom: false,
       zoom: 8
     });
-    this.borderLayer = this.createBorderLayer().addTo(this.map);
     this.cityLayer = this.createCityLayer().addTo(this.map);
 
     L.control.layers({
       "Satellite imagery": satellite,
       "Terrain": terrain
     }, {
-      "Lebanon border": this.borderLayer,
       "City labels": this.cityLayer
     }, {
       collapsed: false,
@@ -80,20 +77,6 @@ export default class TrailMap2D {
     this.markersByTrailId.set(trail.id, marker);
   }
 
-  createBorderLayer() {
-    return L.geoJSON(this.getLebanonBorderGeoJson(), {
-      interactive: false,
-      pane: "overlayPane",
-      style: {
-        color: "#f0c96b",
-        dashArray: "8 5",
-        fill: false,
-        opacity: 0.96,
-        weight: 4
-      }
-    });
-  }
-
   createCityLayer() {
     const cities = [
       { name: "Beirut", lat: 33.8938, lon: 35.5018 },
@@ -119,26 +102,6 @@ export default class TrailMap2D {
     });
 
     return layer;
-  }
-
-  getLebanonBorderGeoJson() {
-    return {
-      type: "Feature",
-      properties: {
-        name: "Lebanon"
-      },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [35.12, 33.08], [35.22, 33.23], [35.29, 33.42], [35.36, 33.62],
-          [35.43, 33.82], [35.50, 34.02], [35.61, 34.22], [35.72, 34.42],
-          [35.88, 34.60], [36.08, 34.63], [36.24, 34.51], [36.32, 34.32],
-          [36.25, 34.13], [36.29, 33.94], [36.19, 33.76], [36.11, 33.58],
-          [35.99, 33.41], [35.86, 33.26], [35.70, 33.15], [35.50, 33.07],
-          [35.31, 33.05], [35.12, 33.08]
-        ]]
-      }
-    };
   }
 
   renderPopup(trail) {
