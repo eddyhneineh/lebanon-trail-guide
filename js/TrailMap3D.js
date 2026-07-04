@@ -2,9 +2,16 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 export default class TrailMap3D {
-  constructor(container, detailTarget, { onTrailSelect, onTrailClear } = {}) {
+  constructor(container, detailTarget, {
+    frame = container?.closest(".map-frame"),
+    navigationToggle,
+    onTrailSelect,
+    onTrailClear
+  } = {}) {
     this.container = container;
     this.detailTarget = detailTarget;
+    this.frame = frame;
+    this.navigationToggle = navigationToggle;
     this.onTrailSelect = onTrailSelect;
     this.onTrailClear = onTrailClear;
     this.scene = null;
@@ -18,6 +25,7 @@ export default class TrailMap3D {
     this.pointer = new THREE.Vector2();
     this.animationFrame = null;
     this.visibleTrails = [];
+    this.isNavigationMode = false;
     this.bounds = {
       minLat: 33.05,
       maxLat: 34.65,
@@ -28,6 +36,9 @@ export default class TrailMap3D {
     this.handleResize = this.handleResize.bind(this);
     this.handlePointerMove = this.handlePointerMove.bind(this);
     this.handlePointerClick = this.handlePointerClick.bind(this);
+    this.handleDetailClick = this.handleDetailClick.bind(this);
+    this.handleDocumentPointerDown = this.handleDocumentPointerDown.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.animate = this.animate.bind(this);
   }
 
@@ -56,6 +67,7 @@ export default class TrailMap3D {
     this.container.append(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enabled = false;
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
     this.controls.maxPolarAngle = Math.PI * 0.48;
@@ -71,8 +83,13 @@ export default class TrailMap3D {
     this.updateDebugState();
 
     window.addEventListener("resize", this.handleResize);
+    document.addEventListener("pointerdown", this.handleDocumentPointerDown);
+    document.addEventListener("keydown", this.handleKeyDown);
     this.renderer.domElement.addEventListener("pointermove", this.handlePointerMove);
     this.renderer.domElement.addEventListener("click", this.handlePointerClick);
+    this.detailTarget?.addEventListener("click", this.handleDetailClick);
+    this.navigationToggle?.addEventListener("click", () => this.toggleNavigationMode());
+    this.setNavigationMode(false);
     this.animate();
   }
 
@@ -84,14 +101,12 @@ export default class TrailMap3D {
     this.visibleTrails = trails;
     this.markerGroup.clear();
     this.markersByTrailId.clear();
-    this.selectedMarker = null;
+    this.clearSelection();
     trails.forEach((trail) => this.markerGroup.add(this.createMarker(trail)));
     this.updateDebugState();
 
-    if (trails.length) {
-      this.selectMarker(this.markersByTrailId.get(trails[0].id));
-    } else if (this.detailTarget) {
-      this.detailTarget.textContent = "No trails match the selected filters.";
+    if (!trails.length) {
+      this.clearSelection();
     }
   }
 
@@ -110,19 +125,9 @@ export default class TrailMap3D {
     });
 
     if (this.selectedMarker && !this.selectedMarker.visible) {
-      this.selectMarker(firstVisibleMarker);
-    } else if (!this.selectedMarker && firstVisibleMarker) {
-      this.selectMarker(firstVisibleMarker);
+      this.clearSelection();
     } else if (!firstVisibleMarker) {
       this.clearSelection();
-      if (this.detailTarget) {
-        this.detailTarget.innerHTML = `
-          <div class="trail-info-empty">
-            <strong>No matching trails</strong>
-            <p class="mb-0">Try widening the region or difficulty filters.</p>
-          </div>
-        `;
-      }
     }
 
     this.updateDebugState();
@@ -308,7 +313,7 @@ export default class TrailMap3D {
 
   handlePointerMove(event) {
     const marker = this.pickMarker(event);
-    this.renderer.domElement.style.cursor = marker ? "pointer" : "grab";
+    this.renderer.domElement.style.cursor = marker ? "pointer" : this.isNavigationMode ? "grab" : "default";
   }
 
   handlePointerClick(event) {
@@ -342,8 +347,13 @@ export default class TrailMap3D {
       return;
     }
 
+    this.detailTarget.hidden = false;
+    this.detailTarget.classList.add("is-open");
     this.detailTarget.innerHTML = `
       <article class="trail-info-card card border-0">
+        <button class="trail-info-close btn btn-light btn-sm" type="button" data-trail-detail-close aria-label="Close trail details">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
         <img src="${trail.imageUrl}" class="card-img-top" alt="${trail.name}" loading="lazy">
         <div class="card-body">
           <div class="d-flex flex-wrap gap-2 mb-2">
@@ -385,8 +395,70 @@ export default class TrailMap3D {
     }
 
     this.selectedMarker = null;
+    this.hideTrailPanel();
     this.onTrailClear?.();
     this.updateDebugState();
+  }
+
+  hideTrailPanel() {
+    if (!this.detailTarget) {
+      return;
+    }
+
+    this.detailTarget.hidden = true;
+    this.detailTarget.classList.remove("is-open");
+    this.detailTarget.innerHTML = "";
+  }
+
+  handleDetailClick(event) {
+    if (event.target.closest("[data-trail-detail-close]")) {
+      this.clearSelection();
+    }
+  }
+
+  toggleNavigationMode() {
+    this.setNavigationMode(!this.isNavigationMode);
+  }
+
+  setNavigationMode(isEnabled) {
+    this.isNavigationMode = isEnabled;
+
+    if (this.controls) {
+      this.controls.enabled = isEnabled;
+    }
+
+    if (this.renderer?.domElement) {
+      this.renderer.domElement.style.touchAction = isEnabled ? "none" : "pan-y";
+      this.renderer.domElement.style.cursor = isEnabled ? "grab" : "default";
+    }
+
+    this.frame?.classList.toggle("is-navigating", isEnabled);
+
+    if (this.navigationToggle) {
+      this.navigationToggle.classList.toggle("btn-primary", isEnabled);
+      this.navigationToggle.classList.toggle("btn-light", !isEnabled);
+      this.navigationToggle.setAttribute("aria-pressed", String(isEnabled));
+      const label = this.navigationToggle.querySelector("[data-navigation-label]");
+      if (label) {
+        label.textContent = isEnabled ? "Exit Navigation" : "Navigate Map";
+      }
+    }
+
+    this.updateDebugState();
+  }
+
+  handleDocumentPointerDown(event) {
+    if (!this.isNavigationMode || !this.frame || this.frame.contains(event.target)) {
+      return;
+    }
+
+    this.setNavigationMode(false);
+  }
+
+  handleKeyDown(event) {
+    if (event.key === "Escape" && this.isNavigationMode) {
+      this.setNavigationMode(false);
+    }
   }
 
   setMarkerHighlight(marker, isSelected) {
@@ -477,6 +549,8 @@ export default class TrailMap3D {
       markerScreenPositions,
       markerCount: this.markerGroup.children.length,
       selectedTrailId: this.selectedMarker?.userData.trail.id || "",
+      infoPanelOpen: Boolean(this.detailTarget && !this.detailTarget.hidden),
+      navigationMode: this.isNavigationMode,
       visibleMarkerCount: this.getVisibleMarkerCount(),
       renderFrame: (window.__trailMapDebug?.renderFrame || 0) + 1,
       sampledColors: colors,
@@ -488,6 +562,8 @@ export default class TrailMap3D {
     this.container.dataset.markerCount = String(this.markerGroup.children.length);
     this.container.dataset.markerScreenPositions = JSON.stringify(markerScreenPositions);
     this.container.dataset.selectedTrailId = window.__trailMapDebug.selectedTrailId;
+    this.container.dataset.infoPanelOpen = String(window.__trailMapDebug.infoPanelOpen);
+    this.container.dataset.navigationMode = String(window.__trailMapDebug.navigationMode);
     this.container.dataset.visibleMarkerCount = String(window.__trailMapDebug.visibleMarkerCount);
     this.container.dataset.renderFrame = String(window.__trailMapDebug.renderFrame);
     this.container.dataset.sampledColors = colors.join("|");

@@ -107,9 +107,30 @@ body {
 
 .map-stage {
   position: relative;
-  min-height: 740px;
+  padding: 3.5rem 0;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.95), rgba(244, 241, 234, 0.96));
+}
+
+.map-shell {
+  position: relative;
+}
+
+.map-frame {
+  position: relative;
+  min-height: 620px;
+  height: min(76vh, 820px);
   overflow: hidden;
+  border: 2px solid rgba(33, 79, 63, 0.2);
+  border-radius: 8px;
   background: var(--cedar-dark);
+  box-shadow: var(--shadow);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.map-frame.is-navigating {
+  border-color: var(--sun);
+  box-shadow: 0 22px 62px rgba(214, 155, 56, 0.28);
 }
 
 .tool-panel,
@@ -136,6 +157,13 @@ body {
   color: #fff;
 }
 
+.map-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .map-toolbar p {
   margin: 0;
   color: rgba(255, 255, 255, 0.78);
@@ -144,7 +172,7 @@ body {
 .trail-map {
   position: absolute;
   inset: 0;
-  min-height: 740px;
+  min-height: 100%;
   overflow: hidden;
   background: var(--cedar-dark);
 }
@@ -153,14 +181,22 @@ body {
   display: block;
   width: 100%;
   height: 100%;
+  touch-action: pan-y;
+}
+
+.map-frame.is-navigating .trail-map canvas {
+  touch-action: none;
 }
 
 .map-interface {
   position: absolute;
-  right: 0;
-  bottom: calc(var(--footer-height) + 1.25rem);
-  left: 0;
+  top: 1.25rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
   pointer-events: none;
 }
 
@@ -187,14 +223,30 @@ body {
 
 .trail-info-panel {
   width: min(100%, 480px);
+  margin-top: auto;
   margin-left: auto;
   padding: 0;
   overflow: hidden;
 }
 
 .trail-info-card {
+  position: relative;
   color: var(--ink);
   background: rgba(255, 255, 255, 0.95);
+}
+
+.trail-info-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(16, 37, 29, 0.18);
 }
 
 .trail-info-card img {
@@ -554,15 +606,25 @@ body {
     flex-direction: column;
   }
 
-  .map-stage,
-  .trail-map {
-    min-height: 860px;
+  .map-stage {
+    padding: 1.25rem 0;
+  }
+
+  .map-frame {
+    min-height: 720px;
+    height: 78vh;
   }
 
   .map-interface {
-    top: 5.25rem;
-    bottom: calc(var(--footer-height) + 0.75rem);
+    top: 0.85rem;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    left: 0.85rem;
     overflow-y: auto;
+  }
+
+  .map-toolbar-actions {
+    justify-content: flex-start;
   }
 
   .trail-detail {

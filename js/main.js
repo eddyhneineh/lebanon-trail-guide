@@ -37,6 +37,8 @@ function initMapPage() {
   reviewManager.init();
 
   const map = new TrailMap3D(mapContainer, document.querySelector("#trail-detail"), {
+    frame: document.querySelector("#map-frame"),
+    navigationToggle: document.querySelector("#mapNavigationToggle"),
     onTrailSelect: (trail) => reviewManager.showForTrail(trail),
     onTrailClear: () => reviewManager.clear()
   });

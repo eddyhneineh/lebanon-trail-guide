@@ -53,16 +53,26 @@
 
     <main id="map" class="map-page">
       <section class="map-stage" aria-label="Interactive 3D trail map of Lebanon">
-        <div id="trail-map" class="trail-map" aria-label="3D map of Lebanon hiking trails"></div>
-        <div class="map-interface container">
-          <div class="map-toolbar">
-            <div>
-              <h2>Interactive 3D Trail Map</h2>
-              <p id="map-summary">Loading trails...</p>
+        <div class="container map-shell">
+          <div class="map-frame" id="map-frame">
+            <div id="trail-map" class="trail-map" aria-label="3D map of Lebanon hiking trails"></div>
+            <div class="map-interface">
+              <div class="map-toolbar">
+                <div>
+                  <h2>Interactive 3D Trail Map</h2>
+                  <p id="map-summary">Loading trails...</p>
+                </div>
+                <div class="map-toolbar-actions">
+                  <button class="btn btn-light btn-sm" id="mapNavigationToggle" type="button" aria-pressed="false">
+                    <i class="bi bi-cursor-fill" aria-hidden="true"></i>
+                    <span data-navigation-label>Navigate Map</span>
+                  </button>
+                  <button class="btn btn-outline-light btn-sm" id="mapResetButton" type="button">Reset view</button>
+                </div>
+              </div>
+              <div id="trail-detail" class="trail-detail trail-info-panel shadow-lg" aria-live="polite" hidden></div>
             </div>
-            <button class="btn btn-outline-light btn-sm" id="mapResetButton" type="button">Reset view</button>
           </div>
-          <div id="trail-detail" class="trail-detail trail-info-panel shadow-lg" aria-live="polite"></div>
         </div>
       </section>
       <section id="trail-reviews" class="reviews-section" aria-live="polite" hidden></section>
