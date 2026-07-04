@@ -3,6 +3,8 @@ export default class TrailMap2D {
     this.container = container;
     this.map = null;
     this.markerLayer = null;
+    this.borderLayer = null;
+    this.cityLayer = null;
     this.markersByTrailId = new Map();
     this.trails = [];
   }
@@ -26,11 +28,22 @@ export default class TrailMap2D {
       scrollWheelZoom: false,
       zoom: 8
     });
+    this.borderLayer = this.createBorderLayer().addTo(this.map);
+    this.cityLayer = this.createCityLayer().addTo(this.map);
+
     L.control.layers({
       "Satellite imagery": satellite,
       "Terrain": terrain
-    }, null, {
+    }, {
+      "Lebanon border": this.borderLayer,
+      "City labels": this.cityLayer
+    }, {
       collapsed: false,
+      position: "bottomright"
+    }).addTo(this.map);
+    L.control.scale({
+      imperial: false,
+      maxWidth: 140,
       position: "bottomright"
     }).addTo(this.map);
 
@@ -65,6 +78,67 @@ export default class TrailMap2D {
     marker.trail = trail;
     marker.addTo(this.markerLayer);
     this.markersByTrailId.set(trail.id, marker);
+  }
+
+  createBorderLayer() {
+    return L.geoJSON(this.getLebanonBorderGeoJson(), {
+      interactive: false,
+      pane: "overlayPane",
+      style: {
+        color: "#f0c96b",
+        dashArray: "8 5",
+        fill: false,
+        opacity: 0.96,
+        weight: 4
+      }
+    });
+  }
+
+  createCityLayer() {
+    const cities = [
+      { name: "Beirut", lat: 33.8938, lon: 35.5018 },
+      { name: "Tripoli", lat: 34.4367, lon: 35.8497 },
+      { name: "Sidon", lat: 33.5571, lon: 35.3715 },
+      { name: "Tyre", lat: 33.2705, lon: 35.2038 },
+      { name: "Zahle", lat: 33.8468, lon: 35.9020 },
+      { name: "Byblos", lat: 34.1230, lon: 35.6519 }
+    ];
+    const layer = L.layerGroup();
+
+    cities.forEach((city) => {
+      L.marker([city.lat, city.lon], {
+        icon: L.divIcon({
+          className: "city-label-marker",
+          html: `<span>${this.escapeHtml(city.name)}</span>`,
+          iconAnchor: [0, 14]
+        }),
+        interactive: false,
+        keyboard: false,
+        title: city.name
+      }).addTo(layer);
+    });
+
+    return layer;
+  }
+
+  getLebanonBorderGeoJson() {
+    return {
+      type: "Feature",
+      properties: {
+        name: "Lebanon"
+      },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[
+          [35.12, 33.08], [35.22, 33.23], [35.29, 33.42], [35.36, 33.62],
+          [35.43, 33.82], [35.50, 34.02], [35.61, 34.22], [35.72, 34.42],
+          [35.88, 34.60], [36.08, 34.63], [36.24, 34.51], [36.32, 34.32],
+          [36.25, 34.13], [36.29, 33.94], [36.19, 33.76], [36.11, 33.58],
+          [35.99, 33.41], [35.86, 33.26], [35.70, 33.15], [35.50, 33.07],
+          [35.31, 33.05], [35.12, 33.08]
+        ]]
+      }
+    };
   }
 
   renderPopup(trail) {

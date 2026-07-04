@@ -199,6 +199,36 @@ body {
   box-shadow: 0 10px 30px rgba(16, 37, 29, 0.16);
 }
 
+.city-label-marker {
+  background: transparent;
+  border: 0;
+}
+
+.city-label-marker span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(16, 37, 29, 0.78);
+  box-shadow: 0 4px 16px rgba(16, 37, 29, 0.28);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 1px 3px rgba(16, 37, 29, 0.65);
+  white-space: nowrap;
+}
+
+.city-label-marker span::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--sun);
+  content: "";
+}
+
 .leaflet-trail-popup {
   max-width: 260px;
 }
