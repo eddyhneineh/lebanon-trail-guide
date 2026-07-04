@@ -1,5 +1,6 @@
 import TrailStore from "./TrailStore.js";
 import TrailMap3D from "./TrailMap3D.js";
+import TrailMap2D from "./TrailMap2D.js";
 import FilterPanel from "./FilterPanel.js";
 import WeatherService from "./WeatherService.js";
 import AuthManager from "./AuthManager.js";
@@ -24,6 +25,7 @@ function initHeroStats() {
 
 function initMapPage() {
   const mapContainer = document.querySelector("#trail-map");
+  const map2DContainer = document.querySelector("#trail-map-2d");
 
   if (!mapContainer) {
     return;
@@ -42,31 +44,78 @@ function initMapPage() {
     onTrailSelect: (trail) => reviewManager.showForTrail(trail),
     onTrailClear: () => reviewManager.clear()
   });
+  const map2D = new TrailMap2D(map2DContainer);
   const summary = document.querySelector("#map-summary");
+  const viewButtons = {
+    threeD: document.querySelector("#mapView3DButton"),
+    twoD: document.querySelector("#mapView2DButton")
+  };
+  const navigationToggle = document.querySelector("#mapNavigationToggle");
+  const resetButton = document.querySelector("#mapResetButton");
+  const mapFrame = document.querySelector("#map-frame");
+  let activeMapView = "3d";
+
   map.render(store.all());
+  map2D.render(store.all());
+  map2D.setActive(false);
+
+  function updateSummary(visibleCount) {
+    if (summary) {
+      summary.textContent = `${visibleCount} trail${visibleCount === 1 ? "" : "s"} shown`;
+    }
+  }
+
+  function setMapView(view) {
+    activeMapView = view;
+    const is2D = view === "2d";
+
+    map.setNavigationMode(false);
+    mapContainer.hidden = is2D;
+    mapContainer.classList.toggle("is-active", !is2D);
+    map2D.setActive(is2D);
+    mapFrame?.classList.toggle("is-2d", is2D);
+    navigationToggle?.classList.toggle("d-none", is2D);
+
+    viewButtons.threeD?.classList.toggle("active", !is2D);
+    viewButtons.threeD?.classList.toggle("btn-light", !is2D);
+    viewButtons.threeD?.classList.toggle("btn-outline-light", is2D);
+    viewButtons.threeD?.setAttribute("aria-pressed", String(!is2D));
+    viewButtons.twoD?.classList.toggle("active", is2D);
+    viewButtons.twoD?.classList.toggle("btn-light", is2D);
+    viewButtons.twoD?.classList.toggle("btn-outline-light", !is2D);
+    viewButtons.twoD?.setAttribute("aria-pressed", String(is2D));
+
+    if (!is2D) {
+      map.handleResize();
+    }
+
+    updateSummary(is2D ? map2D.getVisibleMarkerCount() : map.getVisibleMarkerCount());
+  }
 
   const filters = new FilterPanel({
     store,
     onChange: (criteria) => {
       const visibleCount = map.applyFilters(criteria);
-
-      if (summary) {
-        summary.textContent = `${visibleCount} trail${visibleCount === 1 ? "" : "s"} shown`;
-      }
+      map2D.applyFilters(criteria);
+      updateSummary(visibleCount);
     }
   });
 
   if (summary) {
     const totalTrails = store.all().length;
-    summary.textContent = `${totalTrails} trails shown`;
+    updateSummary(totalTrails);
   }
 
   filters.init();
-  document.querySelector("#mapResetButton")?.addEventListener("click", () => {
-    map.resetView();
-    if (summary) {
-      summary.textContent = `${map.getVisibleMarkerCount()} trail${map.getVisibleMarkerCount() === 1 ? "" : "s"} shown`;
+  viewButtons.threeD?.addEventListener("click", () => setMapView("3d"));
+  viewButtons.twoD?.addEventListener("click", () => setMapView("2d"));
+  resetButton?.addEventListener("click", () => {
+    if (activeMapView === "2d") {
+      map2D.fitLebanon();
+    } else {
+      map.resetView();
     }
+    updateSummary(activeMapView === "2d" ? map2D.getVisibleMarkerCount() : map.getVisibleMarkerCount());
   });
 }
 

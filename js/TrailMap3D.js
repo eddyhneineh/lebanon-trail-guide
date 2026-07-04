@@ -145,42 +145,97 @@ export default class TrailMap3D {
   }
 
   createTerrain() {
-    const geometry = new THREE.PlaneGeometry(26, 64, 46, 110);
-    geometry.rotateX(-Math.PI / 2);
+    const group = new THREE.Group();
+    group.add(this.createLebanonBase());
+    group.add(this.createElevationMesh());
+    return group;
+  }
 
-    const positions = geometry.attributes.position;
-    for (let index = 0; index < positions.count; index += 1) {
-      const x = positions.getX(index);
-      const z = positions.getZ(index);
-      const coastalFalloff = THREE.MathUtils.smoothstep(Math.abs(x), 5, 13);
-      const centralRidge = Math.exp(-Math.pow((x - 1.6) / 4.8, 2)) * 4.2;
-      const northernHighlands = Math.exp(-Math.pow((z + 18) / 11, 2)) * 1.7;
-      const southernHills = Math.sin((z + 10) * 0.18) * 0.45;
-      const texture = Math.sin(x * 0.75) * Math.cos(z * 0.22) * 0.55;
-      const elevation = centralRidge + northernHighlands + southernHills + texture - coastalFalloff * 1.1;
-      positions.setY(index, Math.max(-0.45, elevation));
-    }
+  createLebanonBase() {
+    const shape = this.createLebanonShape();
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+      bevelEnabled: false,
+      depth: 0.8
+    });
+    geometry.rotateX(Math.PI / 2);
+    geometry.translate(0, 0.02, 0);
 
-    geometry.computeVertexNormals();
     const material = new THREE.MeshStandardMaterial({
-      color: 0x7da66d,
-      roughness: 0.88,
-      metalness: 0.02,
-      flatShading: false
+      color: 0x7c6b4f,
+      roughness: 0.9,
+      metalness: 0.02
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.receiveShadow = true;
     return mesh;
   }
 
+  createElevationMesh() {
+    const outline = this.getLebanonOutlinePoints();
+    const xs = outline.map(([x]) => x);
+    const zs = outline.map(([, z]) => z);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minZ = Math.min(...zs);
+    const maxZ = Math.max(...zs);
+    const columns = 54;
+    const rows = 136;
+    const stepX = (maxX - minX) / columns;
+    const stepZ = (maxZ - minZ) / rows;
+    const vertices = [];
+    const colors = [];
+
+    for (let column = 0; column < columns; column += 1) {
+      for (let row = 0; row < rows; row += 1) {
+        const x0 = minX + column * stepX;
+        const x1 = x0 + stepX;
+        const z0 = minZ + row * stepZ;
+        const z1 = z0 + stepZ;
+        const corners = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
+
+        if (!corners.every((point) => this.isPointInPolygon(point, outline))) {
+          continue;
+        }
+
+        this.addTerrainTriangle(vertices, colors, corners[0], corners[1], corners[2]);
+        this.addTerrainTriangle(vertices, colors, corners[0], corners[2], corners[3]);
+      }
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geometry.computeVertexNormals();
+
+    const material = new THREE.MeshStandardMaterial({
+      roughness: 0.86,
+      metalness: 0.01,
+      vertexColors: true
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.name = "lebanon-elevation-terrain";
+    return mesh;
+  }
+
   createLebanonOutline() {
+    const outline = this.getLebanonOutlinePoints();
+    const points = outline.map(([x, z]) => new THREE.Vector3(x, this.getElevationAt(x, z) + 0.08, z));
+    points.push(points[0].clone());
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({
+      color: 0xffdd85,
+      transparent: true,
+      opacity: 0.86
+    });
+    return new THREE.Line(geometry, material);
+  }
+
+  createLebanonShape() {
     const shape = new THREE.Shape();
-    const points = [
-      [-8, -31], [-3.6, -28], [-1.5, -20], [2.5, -12], [4.4, -4],
-      [6.8, 7], [7.4, 18], [5.4, 29], [1.5, 32], [-2.7, 27],
-      [-4.2, 14], [-6.5, 3], [-7.3, -9], [-9, -22]
-    ];
-    points.forEach(([x, z], index) => {
+    this.getLebanonOutlinePoints().forEach(([x, z], index) => {
       if (index === 0) {
         shape.moveTo(x, z);
       } else {
@@ -188,17 +243,59 @@ export default class TrailMap3D {
       }
     });
     shape.closePath();
+    return shape;
+  }
 
-    const geometry = new THREE.ShapeGeometry(shape);
-    geometry.rotateX(-Math.PI / 2);
-    geometry.translate(0, 0.08, 0);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xd8b25a,
-      transparent: true,
-      opacity: 0.22,
-      side: THREE.DoubleSide
+  getLebanonOutlinePoints() {
+    return [
+      [35.12, 33.08], [35.22, 33.23], [35.29, 33.42], [35.36, 33.62],
+      [35.43, 33.82], [35.50, 34.02], [35.61, 34.22], [35.72, 34.42],
+      [35.88, 34.60], [36.08, 34.63], [36.24, 34.51], [36.32, 34.32],
+      [36.25, 34.13], [36.29, 33.94], [36.19, 33.76], [36.11, 33.58],
+      [35.99, 33.41], [35.86, 33.26], [35.70, 33.15], [35.50, 33.07],
+      [35.31, 33.05]
+    ].map(([lon, lat]) => {
+      const { x, z } = this.latLonToFlatPosition(lat, lon);
+      return [x, z];
     });
-    return new THREE.Mesh(geometry, material);
+  }
+
+  addTerrainTriangle(vertices, colors, ...points) {
+    points.forEach(([x, z]) => {
+      const elevation = this.getElevationAt(x, z);
+      const color = this.getElevationColor(elevation);
+      vertices.push(x, elevation, z);
+      colors.push(color.r, color.g, color.b);
+    });
+  }
+
+  getElevationColor(elevation) {
+    const bands = [
+      { max: 0.55, color: new THREE.Color(0x87a66d) },
+      { max: 1.65, color: new THREE.Color(0x4f7c55) },
+      { max: 2.85, color: new THREE.Color(0x8a774f) },
+      { max: 4.2, color: new THREE.Color(0x9b927e) },
+      { max: Infinity, color: new THREE.Color(0xe8e6dc) }
+    ];
+
+    return bands.find((band) => elevation <= band.max).color;
+  }
+
+  isPointInPolygon([x, z], polygon) {
+    let isInside = false;
+
+    for (let current = 0, previous = polygon.length - 1; current < polygon.length; previous = current, current += 1) {
+      const [xi, zi] = polygon[current];
+      const [xj, zj] = polygon[previous];
+      const intersects = ((zi > z) !== (zj > z))
+        && (x < ((xj - xi) * (z - zi)) / (zj - zi) + xi);
+
+      if (intersects) {
+        isInside = !isInside;
+      }
+    }
+
+    return isInside;
   }
 
   createRidgeLine() {
@@ -283,23 +380,36 @@ export default class TrailMap3D {
   }
 
   latLonToPosition(lat, lon) {
+    const { x, z } = this.latLonToFlatPosition(lat, lon);
+    const y = this.getElevationAt(x, z);
+
+    return { x, y, z };
+  }
+
+  latLonToFlatPosition(lat, lon) {
     const width = 24;
     const depth = 60;
     const xRatio = (lon - this.bounds.minLon) / (this.bounds.maxLon - this.bounds.minLon);
     const zRatio = (lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat);
     const x = THREE.MathUtils.clamp((xRatio - 0.5) * width, -11.4, 11.4);
     const z = THREE.MathUtils.clamp((zRatio - 0.5) * -depth, -28.8, 28.8);
-    const y = this.getElevationAt(x, z);
 
-    return { x, y, z };
+    return { x, z };
   }
 
   getElevationAt(x, z) {
-    const centralRidge = Math.exp(-Math.pow((x - 1.6) / 4.8, 2)) * 4.2;
-    const northernHighlands = Math.exp(-Math.pow((z + 18) / 11, 2)) * 1.7;
-    const southernHills = Math.sin((z + 10) * 0.18) * 0.45;
-    const texture = Math.sin(x * 0.75) * Math.cos(z * 0.22) * 0.55;
-    return Math.max(-0.2, centralRidge + northernHighlands + southernHills + texture) + 0.18;
+    const coastalPlain = 1 - THREE.MathUtils.smoothstep(x, -9.4, -5.5);
+    const centralRidge = Math.exp(-Math.pow((x + 1.6) / 3.25, 2)) * 3.6;
+    const antiLebanonRidge = Math.exp(-Math.pow((x - 8.2) / 2.2, 2)) * 1.9;
+    const bekaaValley = Math.exp(-Math.pow((x - 5.0) / 1.7, 2)) * 1.2;
+    const northernPeak = Math.exp(-Math.pow((z + 18) / 7.6, 2)) * 1.55;
+    const sanninePeak = Math.exp(-Math.pow((z + 4.8) / 6.2, 2)) * 1.3;
+    const choufPeak = Math.exp(-Math.pow((z - 7.2) / 7.2, 2)) * 0.9;
+    const ridgeModulation = 0.78 + northernPeak + sanninePeak + choufPeak;
+    const texture = (Math.sin(x * 1.2) * Math.cos(z * 0.32) + Math.sin((x + z) * 0.34)) * 0.18;
+    const elevation = 0.22 + centralRidge * ridgeModulation + antiLebanonRidge - bekaaValley + texture - coastalPlain * 0.28;
+
+    return Math.max(0.08, elevation);
   }
 
   getDifficultyColor(difficulty) {

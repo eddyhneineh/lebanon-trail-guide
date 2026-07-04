@@ -133,6 +133,10 @@ body {
   box-shadow: 0 22px 62px rgba(214, 155, 56, 0.28);
 }
 
+.map-frame.is-2d .map-interface {
+  pointer-events: none;
+}
+
 .tool-panel,
 .weather-result {
   padding: 1.25rem;
@@ -164,6 +168,11 @@ body {
   gap: 0.5rem;
 }
 
+.map-view-toggle {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
 .map-toolbar p {
   margin: 0;
   color: rgba(255, 255, 255, 0.78);
@@ -175,6 +184,59 @@ body {
   min-height: 100%;
   overflow: hidden;
   background: var(--cedar-dark);
+}
+
+.trail-map-2d {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--sky);
+}
+
+.trail-map-2d .leaflet-control-layers {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(16, 37, 29, 0.16);
+}
+
+.leaflet-trail-popup {
+  max-width: 260px;
+}
+
+.leaflet-trail-popup strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--cedar-dark);
+  font-size: 1rem;
+}
+
+.leaflet-trail-popup p {
+  margin-bottom: 0.65rem;
+}
+
+.leaflet-trail-popup dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.leaflet-trail-popup div {
+  padding: 0.35rem;
+  border-radius: 6px;
+  background: var(--stone);
+}
+
+.leaflet-trail-popup dt {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.leaflet-trail-popup dd {
+  margin: 0;
+  font-weight: 800;
 }
 
 .trail-map canvas {
