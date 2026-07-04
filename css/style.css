@@ -105,6 +105,13 @@ body {
   padding-top: 0;
 }
 
+.map-stage {
+  position: relative;
+  min-height: 740px;
+  overflow: hidden;
+  background: var(--cedar-dark);
+}
+
 .tool-panel,
 .weather-result {
   padding: 1.25rem;
@@ -120,86 +127,76 @@ body {
   font-size: 1.1rem;
 }
 
-.map-shell {
-  min-height: 620px;
-  padding: 1rem;
-  border-radius: 8px;
-  background: #f8f5ed;
-  box-shadow: var(--shadow);
-}
-
 .map-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
+  color: #fff;
 }
 
 .map-toolbar p {
   margin: 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .trail-map {
-  position: relative;
-  min-height: 440px;
+  position: absolute;
+  inset: 0;
+  min-height: 740px;
   overflow: hidden;
-  border: 1px solid rgba(16, 37, 29, 0.12);
-  border-radius: 8px;
-  background:
-    radial-gradient(circle at 36% 28%, rgba(217, 237, 243, 0.85), transparent 22%),
-    linear-gradient(155deg, #e7d7ab 0%, #91b28d 45%, #356b58 100%);
-  perspective: 1200px;
+  background: var(--cedar-dark);
 }
 
-.map-plane {
+.trail-map canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.map-interface {
   position: absolute;
-  inset: 8% 9%;
-  border-radius: 8px;
-  background:
-    linear-gradient(115deg, transparent 46%, rgba(255, 255, 255, 0.2) 46% 48%, transparent 48%),
-    linear-gradient(40deg, rgba(255, 255, 255, 0.18), transparent 42%),
-    rgba(255, 250, 240, 0.16);
-  transform: rotateX(62deg) rotateZ(-8deg);
-  transform-style: preserve-3d;
-  box-shadow: 0 35px 50px rgba(16, 37, 29, 0.28);
+  right: 0;
+  bottom: calc(var(--footer-height) + 1.25rem);
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.trail-marker {
-  position: absolute;
-  width: 1rem;
-  height: 1rem;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  background: var(--rose);
-  box-shadow: 0 10px 18px rgba(16, 37, 29, 0.32);
-  transform: translate(-50%, -50%) translateZ(34px);
+.map-interface .btn,
+.map-interface input,
+.map-interface select,
+.map-interface .trail-detail,
+.map-interface .tool-panel {
+  pointer-events: auto;
 }
 
-.trail-marker::after {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 2px;
-  height: 48px;
-  content: "";
-  background: rgba(16, 37, 29, 0.28);
-  transform: translate(-50%, 0);
+.map-controls-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 320px) minmax(280px, 1fr);
+  gap: 1rem;
+  align-items: end;
 }
 
-.trail-marker:focus,
-.trail-marker:hover {
-  outline: 0;
-  background: var(--sun);
+.map-filter-panel {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(16, 37, 29, 0.72);
+  backdrop-filter: blur(16px);
 }
 
 .trail-detail {
   min-height: 86px;
-  margin-top: 1rem;
   padding: 1rem;
   border-radius: 8px;
-  background: #fff;
+  color: #fff;
+  background: rgba(16, 37, 29, 0.76);
+  backdrop-filter: blur(16px);
+}
+
+.trail-detail small {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .trail-grid {
@@ -336,6 +333,32 @@ body {
   .map-toolbar {
     align-items: start;
     flex-direction: column;
+  }
+
+  .map-stage,
+  .trail-map {
+    min-height: 860px;
+  }
+
+  .map-interface {
+    top: 5.25rem;
+    bottom: calc(var(--footer-height) + 0.75rem);
+    overflow-y: auto;
+  }
+
+  .map-controls-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .map-filter-panel,
+  .trail-detail {
+    padding: 1rem;
+  }
+
+  .trail-detail {
+    max-height: 132px;
+    overflow-y: auto;
   }
 
   .footer-inner {

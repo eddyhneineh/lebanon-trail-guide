@@ -52,10 +52,18 @@
     </header>
 
     <main id="map" class="map-page">
-      <section class="container py-5">
-        <div class="row g-4">
-          <aside class="col-lg-3">
-            <div class="tool-panel">
+      <section class="map-stage" aria-label="Interactive 3D trail map of Lebanon">
+        <div id="trail-map" class="trail-map" aria-label="3D map of Lebanon hiking trails"></div>
+        <div class="map-interface container">
+          <div class="map-toolbar">
+            <div>
+              <h2>Interactive 3D Trail Map</h2>
+              <p id="map-summary">Loading trails...</p>
+            </div>
+            <button class="btn btn-outline-light btn-sm" id="mapResetButton" type="button">Reset view</button>
+          </div>
+          <div class="map-controls-grid">
+            <aside class="tool-panel map-filter-panel">
               <h2>Find a route</h2>
               <form id="filter-panel" class="vstack gap-3">
                 <div>
@@ -69,28 +77,16 @@
                 <div>
                   <label class="form-label" for="distanceFilter">Max distance</label>
                   <input class="form-range" id="distanceFilter" name="distance" type="range" min="3" max="25" step="1" value="25">
-                  <div class="d-flex justify-content-between small text-muted">
+                  <div class="d-flex justify-content-between small text-light-emphasis">
                     <span>3 km</span>
                     <span id="distanceValue">25 km</span>
                   </div>
                 </div>
-                <button class="btn btn-dark" type="reset">Reset</button>
+                <button class="btn btn-light" type="reset">Reset</button>
               </form>
-            </div>
-          </aside>
-          <section class="col-lg-9">
-            <div class="map-shell">
-              <div class="map-toolbar">
-                <div>
-                  <h2>Interactive 3D Trail Map</h2>
-                  <p id="map-summary">Loading trails...</p>
-                </div>
-                <button class="btn btn-outline-dark btn-sm" id="mapResetButton" type="button">Reset view</button>
-              </div>
-              <div id="trail-map" class="trail-map" aria-label="3D map of Lebanon hiking trails"></div>
-              <div id="trail-detail" class="trail-detail" aria-live="polite"></div>
-            </div>
-          </section>
+            </aside>
+            <div id="trail-detail" class="trail-detail" aria-live="polite"></div>
+          </div>
         </div>
       </section>
     </main>
@@ -107,6 +103,14 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"
+        }
+      }
+    </script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>
