@@ -1,6 +1,7 @@
 export default class TrailMap2D {
-  constructor(container) {
+  constructor(container, { onTrailSelect } = {}) {
     this.container = container;
+    this.onTrailSelect = onTrailSelect;
     this.map = null;
     this.markerLayer = null;
     this.cityLayer = null;
@@ -22,10 +23,10 @@ export default class TrailMap2D {
     });
 
     this.map = L.map(this.container, {
-      center: [33.93, 35.86],
+      center: [34.02, 35.82],
       layers: [satellite],
       scrollWheelZoom: false,
-      zoom: 8
+      zoom: 9
     });
     this.cityLayer = this.createCityLayer().addTo(this.map);
 
@@ -71,6 +72,9 @@ export default class TrailMap2D {
     });
     marker.bindPopup(this.renderPopup(trail), {
       maxWidth: 280
+    });
+    marker.on("click", () => {
+      this.onTrailSelect?.(trail);
     });
     marker.trail = trail;
     marker.addTo(this.markerLayer);
@@ -169,11 +173,16 @@ export default class TrailMap2D {
       return;
     }
 
-    this.map.fitBounds([
-      [33.05, 35.1],
-      [34.65, 36.35]
-    ], {
-      padding: [28, 28]
+    const bounds = this.trails.length
+      ? this.trails.map((trail) => [trail.lat, trail.lon])
+      : [
+        [33.05, 35.1],
+        [34.65, 36.35]
+      ];
+
+    this.map.fitBounds(bounds, {
+      maxZoom: 9,
+      padding: [36, 36]
     });
   }
 
