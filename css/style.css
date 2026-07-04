@@ -521,6 +521,78 @@ body {
   font-size: 1.05rem;
 }
 
+.weather-state {
+  min-height: 126px;
+  display: grid;
+  place-items: center;
+  gap: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.weather-state .bi {
+  color: var(--cedar);
+  font-size: 2rem;
+}
+
+.weather-empty {
+  border-style: dashed;
+}
+
+.weather-loading {
+  background: rgba(217, 237, 243, 0.45);
+}
+
+.weather-error {
+  border-color: rgba(185, 76, 76, 0.35);
+  background: rgba(185, 76, 76, 0.08);
+}
+
+.weather-ready {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.weather-card {
+  background: transparent;
+}
+
+.weather-verdict {
+  font-size: 0.9rem;
+}
+
+.weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.weather-metrics div {
+  padding: 0.85rem;
+  border-radius: 6px;
+  background: var(--stone);
+}
+
+.weather-metrics span,
+.weather-metrics small {
+  display: block;
+}
+
+.weather-metrics span {
+  color: var(--cedar-dark);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.weather-metrics small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .auth-user-nav {
   align-items: center;
   gap: 0.75rem;
@@ -749,6 +821,10 @@ body {
   }
 
   .trail-info-list {
+    grid-template-columns: 1fr;
+  }
+
+  .weather-metrics {
     grid-template-columns: 1fr;
   }
 

@@ -156,25 +156,123 @@ function initTrailList() {
 
 function initWeatherPage() {
   const form = document.querySelector("#weather-form");
+  const select = document.querySelector("#weather-trail");
   const result = document.querySelector("#weather-result");
+  const submitButton = form?.querySelector("button[type='submit']");
 
-  if (!form || !result) {
+  if (!form || !select || !result) {
     return;
   }
 
+  const trails = store.all();
   const service = new WeatherService();
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const weather = await service.lookup(form.elements.location.value);
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function renderEmpty() {
+    result.className = "weather-result weather-empty";
     result.innerHTML = `
-      <h2>${weather.location}</h2>
-      <p>${weather.summary}</p>
-      <div class="trail-meta">
-        <span>${weather.temperatureC}&deg;C</span>
-        <span>${weather.windKph} kph wind</span>
+      <div class="weather-state">
+        <i class="bi bi-compass" aria-hidden="true"></i>
+        <p class="mb-0">Select a trail to view current weather and hiking guidance.</p>
       </div>
     `;
+  }
+
+  function renderLoading(trail) {
+    result.className = "weather-result weather-loading";
+    result.innerHTML = `
+      <div class="weather-state">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading</span>
+        </div>
+        <p class="mb-0">Fetching current conditions for ${escapeHtml(trail.name)}...</p>
+      </div>
+    `;
+  }
+
+  function renderError(message) {
+    result.className = "weather-result weather-error";
+    result.innerHTML = `
+      <div class="alert alert-danger mb-0" role="alert">
+        <strong>Weather unavailable.</strong>
+        <span>${escapeHtml(message)}</span>
+      </div>
+    `;
+  }
+
+  function renderWeather(weather) {
+    result.className = "weather-result weather-ready";
+    result.innerHTML = `
+      <article class="card weather-card border-0">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+            <div>
+              <p class="eyebrow mb-1">${escapeHtml(weather.region)}</p>
+              <h2 class="card-title h4 mb-1">${escapeHtml(weather.trailName)}</h2>
+              <p class="text-capitalize text-muted mb-0">${escapeHtml(weather.description)}</p>
+            </div>
+            <span class="badge text-bg-${weather.verdict.tone} weather-verdict">${weather.verdict.label}</span>
+          </div>
+          <div class="weather-metrics">
+            <div>
+              <span>${weather.temperatureC}&deg;C</span>
+              <small>Temperature</small>
+            </div>
+            <div>
+              <span>${weather.windSpeedMs.toFixed(1)} m/s</span>
+              <small>Wind speed</small>
+            </div>
+            <div>
+              <span>${weather.humidity}%</span>
+              <small>Humidity</small>
+            </div>
+          </div>
+          <p class="mb-0">${escapeHtml(weather.verdict.reason)}</p>
+        </div>
+      </article>
+    `;
+  }
+
+  async function fetchSelectedTrailWeather() {
+    const trail = trails.find((item) => item.id === select.value);
+
+    if (!trail) {
+      renderEmpty();
+      return;
+    }
+
+    renderLoading(trail);
+    try {
+      const weather = await service.lookupTrail(trail);
+      renderWeather(weather);
+    } catch (error) {
+      renderError(error.message || "Check the API key, network connection, and OpenWeatherMap response.");
+    }
+  }
+
+  select.insertAdjacentHTML("beforeend", trails.map((trail) => `
+    <option value="${escapeHtml(trail.id)}">${escapeHtml(trail.name)}</option>
+  `).join(""));
+
+  select.addEventListener("change", () => {
+    submitButton.disabled = !select.value;
+    fetchSelectedTrailWeather();
   });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    fetchSelectedTrailWeather();
+  });
+
+  renderEmpty();
 }
 
 authManager.init();

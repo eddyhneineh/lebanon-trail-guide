@@ -36,14 +36,16 @@
         <div class="row g-4">
           <div class="col-lg-5">
             <form id="weather-form" class="tool-panel">
-              <label class="form-label" for="weather-location">Location</label>
-              <input class="form-control" id="weather-location" name="location" type="text" value="Bcharre" autocomplete="address-level2">
-              <button class="btn btn-primary mt-3" type="submit">Check conditions</button>
+              <label class="form-label" for="weather-trail">Trail</label>
+              <select class="form-select" id="weather-trail" name="trail" required>
+                <option value="">Select a trail</option>
+              </select>
+              <button class="btn btn-primary mt-3" type="submit" disabled>Refresh conditions</button>
             </form>
           </div>
           <div class="col-lg-7">
             <div id="weather-result" class="weather-result" aria-live="polite">
-              Enter a trail town or region to view estimated hiking conditions.
+              Select a trail to view current hiking conditions.
             </div>
           </div>
         </div>
