@@ -2,8 +2,12 @@ import TrailStore from "./TrailStore.js";
 import TrailMap3D from "./TrailMap3D.js";
 import FilterPanel from "./FilterPanel.js";
 import WeatherService from "./WeatherService.js";
+import AuthManager from "./AuthManager.js";
+import ReviewManager from "./ReviewManager.js";
+import { auth, db } from "./firebaseApp.js";
 
 const store = new TrailStore();
+const authManager = new AuthManager({ auth });
 
 function initHeroStats() {
   const trailCount = document.querySelector("[data-stat='trail-count']");
@@ -25,7 +29,17 @@ function initMapPage() {
     return;
   }
 
-  const map = new TrailMap3D(mapContainer, document.querySelector("#trail-detail"));
+  const reviewManager = new ReviewManager({
+    db,
+    authManager,
+    container: document.querySelector("#trail-reviews")
+  });
+  reviewManager.init();
+
+  const map = new TrailMap3D(mapContainer, document.querySelector("#trail-detail"), {
+    onTrailSelect: (trail) => reviewManager.showForTrail(trail),
+    onTrailClear: () => reviewManager.clear()
+  });
   const summary = document.querySelector("#map-summary");
   map.render(store.all());
 
@@ -100,6 +114,7 @@ function initWeatherPage() {
   });
 }
 
+authManager.init();
 initHeroStats();
 initMapPage();
 initTrailList();

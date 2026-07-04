@@ -2,9 +2,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 export default class TrailMap3D {
-  constructor(container, detailTarget) {
+  constructor(container, detailTarget, { onTrailSelect, onTrailClear } = {}) {
     this.container = container;
     this.detailTarget = detailTarget;
+    this.onTrailSelect = onTrailSelect;
+    this.onTrailClear = onTrailClear;
     this.scene = null;
     this.camera = null;
     this.renderer = null;
@@ -373,6 +375,7 @@ export default class TrailMap3D {
     this.selectedMarker = marker;
     this.setMarkerHighlight(marker, true);
     this.showTrail(marker.userData.trail);
+    this.onTrailSelect?.(marker.userData.trail);
     this.updateDebugState();
   }
 
@@ -382,6 +385,7 @@ export default class TrailMap3D {
     }
 
     this.selectedMarker = null;
+    this.onTrailClear?.();
     this.updateDebugState();
   }
 
