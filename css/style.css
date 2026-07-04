@@ -331,10 +331,11 @@ body {
 
 .trail-info-panel {
   width: min(100%, 480px);
-  margin-top: auto;
+  max-height: min(34svh, 340px);
+  margin-top: 0.75rem;
   margin-left: auto;
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .trail-info-card {
@@ -791,8 +792,8 @@ body {
   }
 
   .map-frame {
-    min-height: 720px;
-    height: 78vh;
+    min-height: 560px;
+    height: min(72svh, 640px);
   }
 
   .map-interface {
@@ -808,12 +809,14 @@ body {
   }
 
   .trail-detail {
-    max-height: 250px;
+    max-height: 200px;
     overflow-y: auto;
   }
 
   .trail-info-panel {
     width: 100%;
+    max-height: 200px;
+    margin-left: 0;
   }
 
   .trail-info-card img {
@@ -844,5 +847,23 @@ body {
     justify-content: center;
     gap: 0.35rem;
     text-align: center;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .trail-info-panel {
+    width: min(100%, 520px);
+    max-height: 320px;
+    margin-top: 0.75rem;
+    margin-left: 0;
+    overflow-y: auto;
+  }
+
+  .trail-info-card img {
+    display: none;
+  }
+
+  .trail-info-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

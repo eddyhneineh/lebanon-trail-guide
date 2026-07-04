@@ -69,11 +69,17 @@ export default class TrailMap3D {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enabled = false;
     this.controls.enableDamping = true;
+    this.controls.enablePan = true;
     this.controls.dampingFactor = 0.08;
     this.controls.maxPolarAngle = Math.PI * 0.48;
     this.controls.minDistance = 20;
     this.controls.maxDistance = 86;
+    this.controls.screenSpacePanning = true;
     this.controls.target.set(0, 0.4, 0);
+    this.controls.touches = {
+      ONE: THREE.TOUCH.ROTATE,
+      TWO: THREE.TOUCH.DOLLY_PAN
+    };
 
     this.scene.add(this.createTerrain());
     this.scene.add(this.createLebanonOutline());
@@ -422,11 +428,20 @@ export default class TrailMap3D {
   }
 
   handlePointerMove(event) {
+    if (this.isNavigationMode) {
+      this.renderer.domElement.style.cursor = "grab";
+      return;
+    }
+
     const marker = this.pickMarker(event);
-    this.renderer.domElement.style.cursor = marker ? "pointer" : this.isNavigationMode ? "grab" : "default";
+    this.renderer.domElement.style.cursor = marker ? "pointer" : "default";
   }
 
   handlePointerClick(event) {
+    if (this.isNavigationMode) {
+      return;
+    }
+
     const marker = this.pickMarker(event);
     if (marker?.userData.trail) {
       this.selectMarker(marker);

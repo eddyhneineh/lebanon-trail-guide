@@ -24,8 +24,11 @@ export default class TrailMap2D {
 
     this.map = L.map(this.container, {
       center: [34.02, 35.82],
+      dragging: true,
       layers: [satellite],
       scrollWheelZoom: false,
+      tap: true,
+      touchZoom: true,
       zoom: 9
     });
     this.cityLayer = this.createCityLayer().addTo(this.map);
@@ -165,6 +168,9 @@ export default class TrailMap2D {
         this.map.invalidateSize();
         this.fitLebanon();
       }, 0);
+      window.requestAnimationFrame(() => {
+        this.map.invalidateSize();
+      });
     }
   }
 
