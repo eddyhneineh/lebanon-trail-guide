@@ -1,10 +1,10 @@
 // Replace this placeholder with a real OpenWeatherMap API key.
-export const OPENWEATHER_API_KEY = "REPLACE_WITH_OPENWEATHERMAP_API_KEY";
+export const OPENWEATHER_API_KEY = "b137d0f6b9b22d90c99455bed00a813c";
 
 export default class WeatherService {
   constructor({
     apiKey = OPENWEATHER_API_KEY,
-    endpoint = "https://api.openweathermap.org/data/2.5/weather"
+    endpoint = "https://api.openweathermap.org/data/2.5/weather",
   } = {}) {
     this.apiKey = apiKey;
     this.endpoint = endpoint;
@@ -38,27 +38,36 @@ export default class WeatherService {
       windSpeedMs: Number(payload.wind?.speed ?? 0),
       humidity: Number(payload.main?.humidity ?? 0),
       weatherId: Number(weather.id ?? 0),
-      weatherMain: weather.main || ""
+      weatherMain: weather.main || "",
     };
 
     return {
       ...normalized,
-      verdict: this.getVerdict(normalized)
+      verdict: this.getVerdict(normalized),
     };
   }
 
   getVerdict(weather) {
     const isThunderstorm = weather.weatherId >= 200 && weather.weatherId < 300;
-    const isHeavyRain = [502, 503, 504, 511, 522, 531].includes(weather.weatherId);
+    const isHeavyRain = [502, 503, 504, 511, 522, 531].includes(
+      weather.weatherId
+    );
     const isSnow = weather.weatherId >= 600 && weather.weatherId < 700;
-    const isExtremeTemp = weather.temperatureC <= 0 || weather.temperatureC >= 38;
+    const isExtremeTemp =
+      weather.temperatureC <= 0 || weather.temperatureC >= 38;
     const isHighWind = weather.windSpeedMs >= 15;
 
-    if (isThunderstorm || isHeavyRain || isSnow || isExtremeTemp || isHighWind) {
+    if (
+      isThunderstorm ||
+      isHeavyRain ||
+      isSnow ||
+      isExtremeTemp ||
+      isHighWind
+    ) {
       return {
         label: "Not recommended",
         tone: "danger",
-        reason: "Conditions are severe enough to postpone the hike."
+        reason: "Conditions are severe enough to postpone the hike.",
       };
     }
 
@@ -71,14 +80,15 @@ export default class WeatherService {
       return {
         label: "Use caution",
         tone: "warning",
-        reason: "Pack accordingly and reconsider exposed or difficult sections."
+        reason:
+          "Pack accordingly and reconsider exposed or difficult sections.",
       };
     }
 
     return {
       label: "Good to hike",
       tone: "success",
-      reason: "Weather looks suitable for a prepared hiking day."
+      reason: "Weather looks suitable for a prepared hiking day.",
     };
   }
 }
