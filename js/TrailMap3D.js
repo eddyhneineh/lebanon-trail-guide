@@ -10,6 +10,8 @@ export default class TrailMap3D {
     this.renderer = null;
     this.controls = null;
     this.markerGroup = new THREE.Group();
+    this.markersByTrailId = new Map();
+    this.selectedMarker = null;
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
     this.animationFrame = null;
@@ -79,14 +81,60 @@ export default class TrailMap3D {
 
     this.visibleTrails = trails;
     this.markerGroup.clear();
+    this.markersByTrailId.clear();
+    this.selectedMarker = null;
     trails.forEach((trail) => this.markerGroup.add(this.createMarker(trail)));
     this.updateDebugState();
 
     if (trails.length) {
-      this.showTrail(trails[0]);
+      this.selectMarker(this.markersByTrailId.get(trails[0].id));
     } else if (this.detailTarget) {
       this.detailTarget.textContent = "No trails match the selected filters.";
     }
+  }
+
+  applyFilters(criteria) {
+    let visibleCount = 0;
+    let firstVisibleMarker = null;
+
+    this.markerGroup.children.forEach((marker) => {
+      const isVisible = this.matchesCriteria(marker.userData.trail, criteria);
+      marker.visible = isVisible;
+
+      if (isVisible) {
+        visibleCount += 1;
+        firstVisibleMarker ||= marker;
+      }
+    });
+
+    if (this.selectedMarker && !this.selectedMarker.visible) {
+      this.selectMarker(firstVisibleMarker);
+    } else if (!this.selectedMarker && firstVisibleMarker) {
+      this.selectMarker(firstVisibleMarker);
+    } else if (!firstVisibleMarker) {
+      this.clearSelection();
+      if (this.detailTarget) {
+        this.detailTarget.innerHTML = `
+          <div class="trail-info-empty">
+            <strong>No matching trails</strong>
+            <p class="mb-0">Try widening the region or difficulty filters.</p>
+          </div>
+        `;
+      }
+    }
+
+    this.updateDebugState();
+    return visibleCount;
+  }
+
+  matchesCriteria(trail, { difficulties = [], region = "All" } = {}) {
+    const difficultyMatch = difficulties.length === 0 || difficulties.includes(trail.difficulty);
+    const regionMatch = region === "All" || trail.region === region;
+    return difficultyMatch && regionMatch;
+  }
+
+  getVisibleMarkerCount() {
+    return this.markerGroup.children.filter((marker) => marker.visible).length;
   }
 
   createTerrain() {
@@ -189,6 +237,7 @@ export default class TrailMap3D {
       emissiveIntensity: 0.08
     });
     const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+    cone.name = "marker-cone";
     cone.position.y = position.y + 1.2;
     cone.castShadow = true;
 
@@ -198,12 +247,31 @@ export default class TrailMap3D {
       roughness: 0.35
     });
     const base = new THREE.Mesh(baseGeometry, baseMaterial);
+    base.name = "marker-base";
     base.position.y = position.y + 0.22;
     base.castShadow = true;
 
+    const hitGeometry = new THREE.SphereGeometry(1.25, 16, 12);
+    const hitMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      opacity: 0,
+      transparent: true,
+      depthWrite: false
+    });
+    const hitTarget = new THREE.Mesh(hitGeometry, hitMaterial);
+    hitTarget.name = "marker-hit-target";
+    hitTarget.position.y = position.y + 1.1;
+
     group.position.set(position.x, 0, position.z);
-    group.userData.trail = trail;
-    group.add(cone, base);
+    group.userData = {
+      base,
+      cone,
+      hitTarget,
+      originalColor: color,
+      trail
+    };
+    group.add(cone, base, hitTarget);
+    this.markersByTrailId.set(trail.id, group);
     return group;
   }
 
@@ -244,7 +312,7 @@ export default class TrailMap3D {
   handlePointerClick(event) {
     const marker = this.pickMarker(event);
     if (marker?.userData.trail) {
-      this.showTrail(marker.userData.trail);
+      this.selectMarker(marker);
     }
   }
 
@@ -254,7 +322,8 @@ export default class TrailMap3D {
     this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     this.raycaster.setFromCamera(this.pointer, this.camera);
 
-    const hits = this.raycaster.intersectObjects(this.markerGroup.children, true);
+    const visibleMarkers = this.markerGroup.children.filter((marker) => marker.visible);
+    const hits = this.raycaster.intersectObjects(visibleMarkers, true);
     return hits.length ? this.findMarkerRoot(hits[0].object) : null;
   }
 
@@ -272,10 +341,58 @@ export default class TrailMap3D {
     }
 
     this.detailTarget.innerHTML = `
-      <strong>${trail.name}</strong>
-      <p class="mb-1">${trail.description}</p>
-      <small>${trail.metaLine} - ${trail.region} - ${trail.difficulty}</small>
+      <article class="trail-info-card card border-0">
+        <img src="${trail.imageUrl}" class="card-img-top" alt="${trail.name}" loading="lazy">
+        <div class="card-body">
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <span class="badge text-bg-success">${trail.region}</span>
+            <span class="badge text-bg-warning">${trail.difficulty}</span>
+          </div>
+          <h3 class="card-title">${trail.name}</h3>
+          <p class="card-text">${trail.description}</p>
+          <dl class="trail-info-list">
+            <div><dt>Distance</dt><dd>${trail.distanceKm} km</dd></div>
+            <div><dt>Elevation</dt><dd>${trail.elevationGainM} m</dd></div>
+            <div><dt>Duration</dt><dd>${trail.durationHours} hr</dd></div>
+          </dl>
+        </div>
+      </article>
     `;
+  }
+
+  selectMarker(marker) {
+    if (!marker) {
+      this.clearSelection();
+      return;
+    }
+
+    if (this.selectedMarker && this.selectedMarker !== marker) {
+      this.setMarkerHighlight(this.selectedMarker, false);
+    }
+
+    this.selectedMarker = marker;
+    this.setMarkerHighlight(marker, true);
+    this.showTrail(marker.userData.trail);
+    this.updateDebugState();
+  }
+
+  clearSelection() {
+    if (this.selectedMarker) {
+      this.setMarkerHighlight(this.selectedMarker, false);
+    }
+
+    this.selectedMarker = null;
+    this.updateDebugState();
+  }
+
+  setMarkerHighlight(marker, isSelected) {
+    const { base, cone, originalColor } = marker.userData;
+    marker.scale.setScalar(isSelected ? 1.45 : 1);
+    cone.material.color.setHex(isSelected ? 0x3fb6ff : originalColor);
+    cone.material.emissive.setHex(isSelected ? 0x0d6efd : originalColor);
+    cone.material.emissiveIntensity = isSelected ? 0.34 : 0.08;
+    base.material.color.setHex(isSelected ? 0xffffff : 0xffffff);
+    marker.userData.isSelected = isSelected;
   }
 
   resetView() {
@@ -335,11 +452,28 @@ export default class TrailMap3D {
     for (let index = 0; index < sample.length; index += 4) {
       colors.push(Array.from(sample.slice(index, index + 4)).join(","));
     }
+    const rect = canvas.getBoundingClientRect();
+    const markerScreenPositions = this.markerGroup.children
+      .filter((marker) => marker.visible)
+      .map((marker) => {
+        const projected = new THREE.Vector3();
+        marker.userData.hitTarget.getWorldPosition(projected);
+        projected.project(this.camera);
+
+        return {
+          id: marker.userData.trail.id,
+          x: Math.round(((projected.x + 1) / 2) * rect.width + rect.left),
+          y: Math.round(((-projected.y + 1) / 2) * rect.height + rect.top)
+        };
+      });
 
     window.__trailMapDebug = {
       canvasHeight: canvas.height,
       canvasWidth: canvas.width,
+      markerScreenPositions,
       markerCount: this.markerGroup.children.length,
+      selectedTrailId: this.selectedMarker?.userData.trail.id || "",
+      visibleMarkerCount: this.getVisibleMarkerCount(),
       renderFrame: (window.__trailMapDebug?.renderFrame || 0) + 1,
       sampledColors: colors,
       uniqueSampledColors: new Set(colors).size
@@ -348,6 +482,9 @@ export default class TrailMap3D {
     this.container.dataset.canvasHeight = String(canvas.height);
     this.container.dataset.canvasWidth = String(canvas.width);
     this.container.dataset.markerCount = String(this.markerGroup.children.length);
+    this.container.dataset.markerScreenPositions = JSON.stringify(markerScreenPositions);
+    this.container.dataset.selectedTrailId = window.__trailMapDebug.selectedTrailId;
+    this.container.dataset.visibleMarkerCount = String(window.__trailMapDebug.visibleMarkerCount);
     this.container.dataset.renderFrame = String(window.__trailMapDebug.renderFrame);
     this.container.dataset.sampledColors = colors.join("|");
     this.container.dataset.uniqueSampledColors = String(window.__trailMapDebug.uniqueSampledColors);

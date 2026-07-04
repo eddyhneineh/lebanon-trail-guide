@@ -20,25 +20,38 @@ function initHeroStats() {
 
 function initMapPage() {
   const mapContainer = document.querySelector("#trail-map");
-  const filterForm = document.querySelector("#filter-panel");
 
-  if (!mapContainer || !filterForm) {
+  if (!mapContainer) {
     return;
   }
 
   const map = new TrailMap3D(mapContainer, document.querySelector("#trail-detail"));
   const summary = document.querySelector("#map-summary");
-  const filters = new FilterPanel(filterForm, store, (criteria) => {
-    const trails = store.filter(criteria);
-    map.render(trails);
+  map.render(store.all());
 
-    if (summary) {
-      summary.textContent = `${trails.length} trail${trails.length === 1 ? "" : "s"} shown`;
+  const filters = new FilterPanel({
+    store,
+    onChange: (criteria) => {
+      const visibleCount = map.applyFilters(criteria);
+
+      if (summary) {
+        summary.textContent = `${visibleCount} trail${visibleCount === 1 ? "" : "s"} shown`;
+      }
     }
   });
 
+  if (summary) {
+    const totalTrails = store.all().length;
+    summary.textContent = `${totalTrails} trails shown`;
+  }
+
   filters.init();
-  document.querySelector("#mapResetButton")?.addEventListener("click", () => map.resetView());
+  document.querySelector("#mapResetButton")?.addEventListener("click", () => {
+    map.resetView();
+    if (summary) {
+      summary.textContent = `${map.getVisibleMarkerCount()} trail${map.getVisibleMarkerCount() === 1 ? "" : "s"} shown`;
+    }
+  });
 }
 
 function initTrailList() {
