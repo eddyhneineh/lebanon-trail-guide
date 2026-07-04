@@ -791,9 +791,16 @@ body {
     padding: 1.25rem 0;
   }
 
+  .map-shell {
+    width: calc(100% - 2rem);
+    padding-right: 0;
+    padding-left: 0;
+  }
+
   .map-frame {
     min-height: 560px;
     height: min(72svh, 640px);
+    border-color: rgba(33, 79, 63, 0.32);
   }
 
   .map-interface {
