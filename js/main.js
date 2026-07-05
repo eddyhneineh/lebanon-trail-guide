@@ -45,7 +45,11 @@ function initMapPage() {
   });
   const map2D = new TrailMap2D(map2DContainer, {
     onTrailSelect: (trail) => {
-      map.showTrail(trail);
+      if (window.matchMedia("(max-width: 767px)").matches) {
+        map.showTrail(trail);
+      } else {
+        map.hideTrailPanel();
+      }
       reviewManager.showForTrail(trail);
     }
   });

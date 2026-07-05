@@ -78,11 +78,18 @@ export default class TrailMap2D {
     const marker = L.marker([trail.lat, trail.lon], {
       title: trail.name
     });
-    marker.bindPopup(this.renderPopup(trail), {
-      maxWidth: 280
-    });
     marker.on("click", () => {
       this.onTrailSelect?.(trail);
+      if (this.shouldUsePopup()) {
+        L.popup({
+          maxWidth: 280
+        })
+          .setLatLng(marker.getLatLng())
+          .setContent(this.renderPopup(trail))
+          .openOn(this.map);
+      } else {
+        this.map.closePopup();
+      }
     });
     marker.trail = trail;
     marker.addTo(this.markerLayer);
@@ -204,6 +211,10 @@ export default class TrailMap2D {
     }
 
     return this.markerLayer.getLayers().length;
+  }
+
+  shouldUsePopup() {
+    return !window.matchMedia("(max-width: 767px)").matches;
   }
 
   setNavigationMode(isEnabled) {
