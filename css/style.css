@@ -249,6 +249,15 @@ body {
   max-width: 260px;
 }
 
+.leaflet-trail-popup img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 0.65rem;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--sky);
+}
+
 .leaflet-trail-popup strong {
   display: block;
   margin-bottom: 0.35rem;
@@ -292,8 +301,16 @@ body {
   touch-action: pan-y;
 }
 
+.trail-map-2d.leaflet-container {
+  touch-action: pan-y !important;
+}
+
 .map-frame.is-navigating .trail-map canvas {
   touch-action: none;
+}
+
+.map-frame.is-navigating .trail-map-2d.leaflet-container {
+  touch-action: none !important;
 }
 
 .map-interface {

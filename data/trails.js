@@ -10,7 +10,7 @@ export const trails = [
     description: "This reserve trail climbs through one of Lebanon's most important cedar forests above Barouk. Hikers get wide views over the Chouf ridges, spring wildflowers, and quiet shaded sections under old cedar stands.",
     lat: 33.6946,
     lon: 35.6812,
-    imageUrl: "https://placehold.co/800x520?text=Chouf+Cedar+Reserve"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/48/Barouk_Mountain.JPG/960px-Barouk_Mountain.JPG&w=800"
   },
   {
     id: "tannourine-cedars-reserve",
@@ -23,7 +23,7 @@ export const trails = [
     description: "A mountain forest route through the Tannourine cedar reserve, with rocky viewpoints and deep green ravines. The trail is known for its cool air, dramatic karst terrain, and dense groves of Lebanon cedar.",
     lat: 34.2127,
     lon: 35.9283,
-    imageUrl: "https://placehold.co/800x520?text=Tannourine+Cedars"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Cedars_of_Tannourine_1.jpg/960px-Cedars_of_Tannourine_1.jpg&w=800"
   },
   {
     id: "qadisha-valley-bcharre",
@@ -36,7 +36,7 @@ export const trails = [
     description: "This classic route drops from the Bcharre area into the Qadisha Valley, a UNESCO-listed landscape of monasteries, caves, and sheer limestone walls. It is a rewarding but demanding hike with sustained climbs back out of the valley.",
     lat: 34.2509,
     lon: 36.0106,
-    imageUrl: "https://placehold.co/800x520?text=Qadisha+Valley"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/8d/A_mystical_canyon_of_Qadisha_%28Holy%29_Valley_in_northern_Lebanon.jpg/960px-A_mystical_canyon_of_Qadisha_%28Holy%29_Valley_in_northern_Lebanon.jpg&w=800"
   },
   {
     id: "faraya-ouyoun-el-simane",
@@ -49,7 +49,7 @@ export const trails = [
     description: "A highland route around Faraya and Ouyoun el Simane with open slopes, limestone formations, and broad views toward Mount Lebanon. It is best in clear weather when the ridge visibility is strong.",
     lat: 34.0059,
     lon: 35.8426,
-    imageUrl: "https://placehold.co/800x520?text=Faraya+Ouyoun"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/33/Montagnes_Faraya.jpg/960px-Montagnes_Faraya.jpg&w=800"
   },
   {
     id: "jabal-moussa-chouwen",
@@ -62,7 +62,7 @@ export const trails = [
     description: "This route links forested paths in the Jabal Moussa Biosphere Reserve with viewpoints over the Nahr Ibrahim valley. The descent toward Chouwen is popular for its turquoise lake and picnic stops near the water.",
     lat: 34.0708,
     lon: 35.7334,
-    imageUrl: "https://placehold.co/800x520?text=Jabal+Moussa+Chouwen"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Jabal_Moussa_Biosphere_Reserve_01.jpg/960px-Jabal_Moussa_Biosphere_Reserve_01.jpg&w=800"
   },
   {
     id: "baskinta-literary-trail",
@@ -75,7 +75,7 @@ export const trails = [
     description: "The Baskinta Literary Trail connects village lanes, orchards, and mountain paths tied to Lebanese writers and poets. It mixes cultural stops with steady hiking through the foothills below Mount Sannine.",
     lat: 33.9434,
     lon: 35.7878,
-    imageUrl: "https://placehold.co/800x520?text=Baskinta+Literary+Trail"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Baskinta_village.jpg/960px-Baskinta_village.jpg&w=800"
   },
   {
     id: "akkar-karm-chbat",
@@ -88,7 +88,7 @@ export const trails = [
     description: "Karm Chbat is a northern forest hike through oak, pine, and high Akkar scenery close to the Syrian borderlands. The trail feels remote and offers sweeping views over valleys, villages, and wooded slopes.",
     lat: 34.5203,
     lon: 36.2028,
-    imageUrl: "https://placehold.co/800x520?text=Akkar+Karm+Chbat"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Abies_cilicica.JPG/960px-Abies_cilicica.JPG&w=800"
   },
   {
     id: "horsh-ehden-reserve",
@@ -101,7 +101,7 @@ export const trails = [
     description: "A lush loop inside Horsh Ehden Nature Reserve, one of Lebanon's richest mountain forest habitats. Hikers pass cedar, fir, juniper, and shaded woodland sections with cooler summer temperatures.",
     lat: 34.3048,
     lon: 35.9961,
-    imageUrl: "https://placehold.co/800x520?text=Horsh+Ehden"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/94/Horsh_Ehden_%282001%29_01.jpg/960px-Horsh_Ehden_%282001%29_01.jpg&w=800"
   },
   {
     id: "mount-sannine-summit",
@@ -114,7 +114,7 @@ export const trails = [
     description: "A strenuous ascent toward Mount Sannine with exposed ridgelines, alpine terrain, and big views across the Metn and Bekaa. The route is best reserved for fit hikers with stable weather and early starts.",
     lat: 33.9559,
     lon: 35.8772,
-    imageUrl: "https://placehold.co/800x520?text=Mount+Sannine"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Mount_Sannine_2.jpg/960px-Mount_Sannine_2.jpg&w=800"
   },
   {
     id: "laklouk-akoura",
@@ -127,7 +127,7 @@ export const trails = [
     description: "This plateau hike crosses the high country between Laklouk and Akoura, where limestone basins, apple orchards, and open ridges dominate the landscape. It is a scenic spring and autumn route with little shade.",
     lat: 34.1441,
     lon: 35.8923,
-    imageUrl: "https://placehold.co/800x520?text=Laklouk+Akoura"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/48/Pan_Akoura_Lakes%2C_Lebanon.jpg/960px-Pan_Akoura_Lakes%2C_Lebanon.jpg&w=800"
   },
   {
     id: "nahr-ibrahim-valley",
@@ -140,7 +140,7 @@ export const trails = [
     description: "A river-valley hike following sections above Nahr Ibrahim, with cliffs, woodland, and seasonal water features. The route has a wilder feel than many village walks and can be slippery after rain.",
     lat: 34.0751,
     lon: 35.6978,
-    imageUrl: "https://placehold.co/800x520?text=Nahr+Ibrahim"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Nahr_Ibrahim%2C_river_in_Lebanon_2011_-_P1060165.jpg/960px-Nahr_Ibrahim%2C_river_in_Lebanon_2011_-_P1060165.jpg&w=800"
   },
   {
     id: "chouwen-lake-trail",
@@ -153,7 +153,7 @@ export const trails = [
     description: "A popular descent through pine forest to the bright waters of Chouwen Lake. It is one of Lebanon's favorite short hikes, especially outside peak summer weekends when the path is quieter.",
     lat: 34.0722,
     lon: 35.7244,
-    imageUrl: "https://placehold.co/800x520?text=Chouwen+Lake"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Discover_Lebanon_Ibrahim_River_%28199223213%29.jpeg/960px-Discover_Lebanon_Ibrahim_River_%28199223213%29.jpeg&w=800"
   },
   {
     id: "cedars-of-god-loop",
@@ -166,7 +166,7 @@ export const trails = [
     description: "A short heritage walk inside the famous Cedars of God grove above Bcharre. The route is gentle, accessible, and focused on Lebanon's ancient cedar trees rather than long-distance trekking.",
     lat: 34.2444,
     lon: 36.0481,
-    imageUrl: "https://placehold.co/800x520?text=Cedars+of+God"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Cedar_of_Lebanon_%28Cedar_of_God%29%2C_Lebanon.jpg/960px-Cedar_of_Lebanon_%28Cedar_of_God%29%2C_Lebanon.jpg&w=800"
   },
   {
     id: "bkassine-pine-forest",
@@ -179,7 +179,7 @@ export const trails = [
     description: "A pleasant southern hike through the pine forests around Bkassine near Jezzine. The trail combines shaded forest paths, village views, and gentle climbs suitable for mixed-experience groups.",
     lat: 33.5405,
     lon: 35.5847,
-    imageUrl: "https://placehold.co/800x520?text=Bkassine+Pine+Forest"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/6/6d/Lebanon_-_Jezine_Waterfalls.waterfall.jpg&w=800"
   },
   {
     id: "wadi-qannoubine",
@@ -192,7 +192,7 @@ export const trails = [
     description: "A Qadisha-side route visiting historic monastery sites and terraced valley paths around Wadi Qannoubine. The hike is rich in cultural history, with steep stone sections and dramatic cliff scenery.",
     lat: 34.2637,
     lon: 35.9582,
-    imageUrl: "https://placehold.co/800x520?text=Wadi+Qannoubine"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Qannoubine_valley.jpg/960px-Qannoubine_valley.jpg&w=800"
   },
   {
     id: "wadi-jahannam-akkar",
@@ -205,7 +205,7 @@ export const trails = [
     description: "Wadi Jahannam, often called the Valley of Hell, is a rugged Akkar hike through remote forest and deep valley terrain. It rewards experienced hikers with waterfalls, thick greenery, and a strong wilderness atmosphere.",
     lat: 34.4579,
     lon: 36.1605,
-    imageUrl: "https://placehold.co/800x520?text=Wadi+Jahannam"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Elhed_Akkar_-_river.JPG/960px-Elhed_Akkar_-_river.JPG&w=800"
   },
   {
     id: "qornet-el-sawda",
@@ -218,7 +218,7 @@ export const trails = [
     description: "A high-altitude route to Lebanon's highest summit, Qornet el Sawda, usually approached from the Bcharre or Cedars area. The terrain is exposed and rocky, with snow lingering into spring in many years.",
     lat: 34.3086,
     lon: 36.1133,
-    imageUrl: "https://placehold.co/800x520?text=Qornet+el+Sawda"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/27/Kornet_Al_Sawda_Mountain%2C_Lebanon_-_Photography_by_Wissam_Shekhani_-_November_2011.jpg/960px-Kornet_Al_Sawda_Mountain%2C_Lebanon_-_Photography_by_Wissam_Shekhani_-_November_2011.jpg&w=800"
   },
   {
     id: "jezzine-waterfall-trail",
@@ -231,6 +231,6 @@ export const trails = [
     description: "A short scenic walk around Jezzine's waterfall viewpoints, pine slopes, and old town edges. It is a friendly route for casual hikers who want a compact mix of nature and village atmosphere.",
     lat: 33.5417,
     lon: 35.5844,
-    imageUrl: "https://placehold.co/800x520?text=Jezzine+Waterfall"
+    imageUrl: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/6/6d/Lebanon_-_Jezine_Waterfalls.waterfall.jpg&w=800"
   }
 ];

@@ -7,6 +7,7 @@ export default class TrailMap2D {
     this.cityLayer = null;
     this.markersByTrailId = new Map();
     this.trails = [];
+    this.isNavigationMode = false;
   }
 
   init() {
@@ -24,11 +25,14 @@ export default class TrailMap2D {
 
     this.map = L.map(this.container, {
       center: [34.02, 35.82],
-      dragging: true,
+      dragging: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
       layers: [satellite],
       scrollWheelZoom: false,
       tap: true,
-      touchZoom: true,
+      touchZoom: false,
       zoom: 9
     });
     this.cityLayer = this.createCityLayer().addTo(this.map);
@@ -49,6 +53,7 @@ export default class TrailMap2D {
     }).addTo(this.map);
 
     this.markerLayer = L.layerGroup().addTo(this.map);
+    this.setNavigationMode(false);
     this.updateDebugState();
   }
 
@@ -114,6 +119,7 @@ export default class TrailMap2D {
   renderPopup(trail) {
     return `
       <article class="leaflet-trail-popup">
+        <img src="${this.escapeHtml(trail.imageUrl)}" alt="${this.escapeHtml(trail.name)}" loading="eager">
         <strong>${this.escapeHtml(trail.name)}</strong>
         <p>${this.escapeHtml(trail.description)}</p>
         <dl>
@@ -200,12 +206,32 @@ export default class TrailMap2D {
     return this.markerLayer.getLayers().length;
   }
 
+  setNavigationMode(isEnabled) {
+    this.isNavigationMode = isEnabled;
+
+    if (!this.map) {
+      return;
+    }
+
+    const method = isEnabled ? "enable" : "disable";
+    this.map.dragging[method]();
+    this.map.touchZoom[method]();
+    this.map.doubleClickZoom[method]();
+    this.map.boxZoom[method]();
+    this.map.keyboard[method]();
+    this.map.scrollWheelZoom[method]();
+    this.container.classList.toggle("is-navigating", isEnabled);
+    this.container.dataset.navigationMode = String(isEnabled);
+    this.updateDebugState();
+  }
+
   updateDebugState() {
     if (!this.container) {
       return;
     }
 
     this.container.dataset.markerCount = String(this.markersByTrailId.size);
+    this.container.dataset.navigationMode = String(this.isNavigationMode);
     this.container.dataset.visibleMarkerCount = String(this.getVisibleMarkerCount());
   }
 

@@ -94,7 +94,6 @@ export default class TrailMap3D {
     this.renderer.domElement.addEventListener("pointermove", this.handlePointerMove);
     this.renderer.domElement.addEventListener("click", this.handlePointerClick);
     this.detailTarget?.addEventListener("click", this.handleDetailClick);
-    this.navigationToggle?.addEventListener("click", () => this.toggleNavigationMode());
     this.setNavigationMode(false);
     this.animate();
   }
@@ -479,7 +478,7 @@ export default class TrailMap3D {
         <button class="trail-info-close btn btn-light btn-sm" type="button" data-trail-detail-close aria-label="Close trail details">
           <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
-        <img src="${trail.imageUrl}" class="card-img-top" alt="${trail.name}" loading="lazy">
+        <img src="${trail.imageUrl}" class="card-img-top" alt="${trail.name}" loading="eager">
         <div class="card-body">
           <div class="d-flex flex-wrap gap-2 mb-2">
             <span class="badge text-bg-success">${trail.region}</span>

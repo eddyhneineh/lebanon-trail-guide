@@ -40,7 +40,6 @@ function initMapPage() {
 
   const map = new TrailMap3D(mapContainer, document.querySelector("#trail-detail"), {
     frame: document.querySelector("#map-frame"),
-    navigationToggle: document.querySelector("#mapNavigationToggle"),
     onTrailSelect: (trail) => reviewManager.showForTrail(trail),
     onTrailClear: () => reviewManager.clear()
   });
@@ -57,13 +56,13 @@ function initMapPage() {
   const mapFrame = document.querySelector("#map-frame");
   const disclaimer3D = document.querySelector("#map3DDisclaimer");
   let activeMapView = "2d";
+  let isMapNavigationEnabled = false;
 
   map.render(store.all());
   map2D.render(store.all());
   mapContainer.hidden = true;
   map2D.setActive(true);
   mapFrame?.classList.add("is-2d");
-  navigationToggle?.classList.add("d-none");
   if (disclaimer3D) {
     disclaimer3D.hidden = true;
   }
@@ -74,16 +73,37 @@ function initMapPage() {
     }
   }
 
+  function updateNavigationToggle() {
+    if (!navigationToggle) {
+      return;
+    }
+
+    navigationToggle.classList.toggle("btn-primary", isMapNavigationEnabled);
+    navigationToggle.classList.toggle("btn-light", !isMapNavigationEnabled);
+    navigationToggle.setAttribute("aria-pressed", String(isMapNavigationEnabled));
+    const label = navigationToggle.querySelector("[data-navigation-label]");
+    if (label) {
+      label.textContent = isMapNavigationEnabled ? "Exit Navigation" : "Navigate Map";
+    }
+  }
+
+  function setMapNavigationMode(isEnabled) {
+    isMapNavigationEnabled = isEnabled;
+    map.setNavigationMode(isEnabled && activeMapView === "3d");
+    map2D.setNavigationMode(isEnabled && activeMapView === "2d");
+    mapFrame?.classList.toggle("is-navigating", isEnabled);
+    updateNavigationToggle();
+  }
+
   function setMapView(view) {
     activeMapView = view;
     const is2D = view === "2d";
 
-    map.setNavigationMode(false);
+    setMapNavigationMode(false);
     mapContainer.hidden = is2D;
     mapContainer.classList.toggle("is-active", !is2D);
     map2D.setActive(is2D);
     mapFrame?.classList.toggle("is-2d", is2D);
-    navigationToggle?.classList.toggle("d-none", is2D);
     if (disclaimer3D) {
       disclaimer3D.hidden = is2D;
     }
@@ -119,6 +139,8 @@ function initMapPage() {
   }
 
   filters.init();
+  updateNavigationToggle();
+  navigationToggle?.addEventListener("click", () => setMapNavigationMode(!isMapNavigationEnabled));
   viewButtons.threeD?.addEventListener("click", () => setMapView("3d"));
   viewButtons.twoD?.addEventListener("click", () => setMapView("2d"));
   resetButton?.addEventListener("click", () => {
