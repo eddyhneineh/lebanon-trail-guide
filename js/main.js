@@ -44,7 +44,10 @@ function initMapPage() {
     onTrailClear: () => reviewManager.clear()
   });
   const map2D = new TrailMap2D(map2DContainer, {
-    onTrailSelect: (trail) => reviewManager.showForTrail(trail)
+    onTrailSelect: (trail) => {
+      map.showTrail(trail);
+      reviewManager.showForTrail(trail);
+    }
   });
   const summary = document.querySelector("#map-summary");
   const viewButtons = {

@@ -472,7 +472,7 @@ export default class TrailMap3D {
     }
 
     this.detailTarget.hidden = false;
-    this.detailTarget.classList.add("is-open");
+    this.detailTarget.classList.remove("is-open");
     this.detailTarget.innerHTML = `
       <article class="trail-info-card card border-0">
         <button class="trail-info-close btn btn-light btn-sm" type="button" data-trail-detail-close aria-label="Close trail details">
@@ -494,6 +494,11 @@ export default class TrailMap3D {
         </div>
       </article>
     `;
+    window.requestAnimationFrame(() => {
+      if (!this.detailTarget.hidden) {
+        this.detailTarget.classList.add("is-open");
+      }
+    });
   }
 
   selectMarker(marker) {
